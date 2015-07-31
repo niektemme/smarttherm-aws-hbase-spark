@@ -1,7 +1,7 @@
 /*
  * SMART THERMOSTAT - Cloud part
  * Niek Temme
- * Documentation: http://niektemme.com/@@
+ * Documentation: http://niektemme.com/2015/07/31/smart-thermostat/ @@to do
  *
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
