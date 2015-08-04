@@ -10,15 +10,48 @@ This smart thermostat is based on three feedback loops.
 ![Smart thermostat overview - three feedback loops](https://niektemme.files.wordpress.com/2015/07/schema_loop3.png)
 
 ## Installation & Setup
+The cloud part of the Smart Thermostat is based on one python script (outside_temperature), two spark jobs (score & cluster) and one Scala application to initiate the score spark job. A more detailed describtion of how these work together is described in the blog post mentioned above. 
 
-### Dependencies
-The following Arduino libraries are required
-- LiquidCrystal (LCD) - should be installed by default
-- SoftwareSerial - should be installed by default
-- XBee - [Google code page](https://code.google.com/p/xbee-arduino/)
+### HBase tables
+Running HBase and creating the required HBase tables is described in the 'Installation & Setup' paragraph in the readme inlcuded in the [Smart Thermostat - Raspberry PI Repository](https://github.com/niektemme/smarttherm-rpi)
 
-### Installation
-The Arduino sketch in the smarttherm subfolder of this repository can be uploaded to the arduino as with any Arduino sketch.
+### Updating outside temperature
+The outtempupdate python script in the outside_temperature subfolder of this repository can run as a hourly cron or simply be put in the /etc/cron.hourly/ folder. Scripts in a cron.* folder can not have a file exention. Also the script has to be executable Do: sudo chmod a+x ./outtempupdate from the script location.
+
+#### Updating the outside temperature location
+The outtempupdate script gets the temperature information from http://www.openweathermap.org Update the line bellow to the correct url for your location.
+weget = urllib2.urlopen("http://api.openweathermap.org/data/2.5/weather?id=2759794")
+
+### Running Apache Spark
+The Spark jobs require a running Spark cluster. The [Spark website](https://spark.apache.org/docs/latest/cluster-overview.html) describes how to set this up.
+
+### Compiling scala spark using Apache Maven
+The score, runscore and cluster are written in Scala. The source code is included in the different subdirectories of this repository. Te compile the source code to .jar files that can be run by the Apache spark cluster, including the required dependancies [Apache Maven](http://maven.apache.org) can be used. To comple the scala code using Maven run the folling command from each of the three subfolders: mvn package
+
+#### .pom files.
+Apache Maven uses .pom files to inculde dependancies and configure compiling the source code.
+The maven .pom files are included in the different sub folders of this repository. In the .pom files the required depenencies to HBase and Spark are included. In the included .pom files specific versions of HBase are referrenced. These need to be changed to the correct versions of HBase running on your cluster.
+
+### Log files
+For the score and cluster spark job the internal logging system of Apache spark are used.
+
+The runscore scala application uses jog4j By default a log file called scorelog.log is added to the same directory of the runscore.lib when the scala application is first run. Modify the conf/log4j.properties to set te logfile and logging configuration.
+
+## Running
+
+### Score
+The score spark job is run form the runscore scala application.
+
+### Runscore
+To periodically start the runscore application add the following cron job. This checks every hour if there are uploaded scenarios that need to be scored. Make sure to correctly set the directory of the score .jar file, the HBase-site conf file and log4.properties file.
+
+5 * * * * scala -cp "/usr/local/hbase/lib/*:/usr/local/spark/conf/hbase-site.xml:/usr/local/spark/tempniek/runscore/target/score-1.0-SNAPSHOT.jar" -Dlog4j.configuration=file:////usr/local/spark/tempniek/runscore/conf/log4j.properties runscoretemp
+
+### Cluster
+The cluster spark job is directly initiated form a cron job. To periodically start the runscore application add the following cron job. This checks every hour if there are uploaded scenarios that need to be scored. Make sure to correctly set the HBase .jar dependencies, spark server ip address, and cluster .jar file location.
+
+10 11 * * * /usr/local/spark/bin/spark-submit --driver-class-path /usr/local/hbase/lib/hbase-server-0.98.7-hadoop2.jar:/usr/local/hbase/lib/hbase-protocol-0.98.7-hadoop2.jar:/usr/local/hbase/lib/hbase-hadoop2-compat-0.98.7-hadoop2.jar:/usr/local/hbase/lib/hbase-client-0.98.7-hadoop2.jar:/usr/local/hbase/lib/hbase-common-0.98.7-hadoop2.jar:/usr/local/hbase/lib/htrace-core-2.04.jar:/usr/local/hbase/lib/guava-12.0.1.jar --deploy-mode "cluster" --class "clustertemp" --master spark://ip-172-31-7-254:6066 /usr/local/spark/tempniek/cluster/target/cluster-1.0-SNAPSHOT.jar
+
 
 ## Acknowledgements
 The code used in this project is often based on wonderful and clear written examples written by other people. I would especially like to thank the following people (alphabetical order).
