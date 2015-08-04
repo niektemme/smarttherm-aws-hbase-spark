@@ -16,10 +16,11 @@ The cloud part of the Smart Thermostat is based on one python script (outside_te
 Running HBase and creating the required HBase tables is described in the 'Installation & Setup' paragraph in the readme included in the [Smart Thermostat - Raspberry PI Repository](https://github.com/niektemme/smarttherm-rpi)
 
 ### Updating outside temperature
-The outtempupdate python script in the outside_temperature sub folder of this repository can run as a hourly cron or simply be put in the /etc/cron.hourly/ folder. Scripts in a cron.* folder can not have a file extention. Also the script has to be executable Do: sudo chmod a+x ./outtempupdate from the script location.
+The outtempupdate python script in the outside_temperature sub folder of this repository can run as a hourly cron or simply be put in the /etc/cron.hourly/ folder. Scripts in a cron.* folder can not have a file extention. Also the script has to be executable. Do: sudo chmod a+x ./outtempupdate from the script location.
 
 #### Updating the city of the outside temperature location
 The outtempupdate script gets the temperature information from http://www.openweathermap.org Update the line bellow to the correct url for your location.
+
 weget = urllib2.urlopen("http://api.openweathermap.org/data/2.5/weather?id=2759794")
 
 ### Running Apache Spark
@@ -38,7 +39,7 @@ For the score and cluster spark job the internal logging system of Apache spark 
 The runscore scala application uses jog4j By default a log file called scorelog.log is added to the same directory of the runscore.lib when the scala application is first run. Modify the conf/log4j.properties to set the log file and logging configuration.
 
 ### HBase .jar dependencies
-In order for the Spark jobs and scala application to connect to the HBase server, the required HBase .jar files have to be included in the class path when running the jobs and application. For the cluster spark job and runscore spark application the class path is set in cron job that starts the job or application (see the 'Running paragraph' bellow).
+In order for the Spark jobs and scala application to connect to the HBase server, the required HBase .jar files have to be included in the class path when running the jobs and application. For the cluster spark job and runscore spark application the class path is set in cron job that starts the job or application (see the 'Running' paragraph bellow).
 
 The score Spark job is started form the runscore scala application and therefore the HBase dependencies for the score job are currently set in in the runscore source code in the sourceFilesAt() function. 
 
