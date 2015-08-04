@@ -1,0 +1,58 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import happybase
+import time
+import datetime
+import csv
+import urllib2
+import json
+from pprint import pprint
+import logging
+
+logging.basicConfig(filename='/home/ubuntu/wtemp.log',level=logging.INFO)
+logging.info('I told you so')
+
+try:
+
+    logging.info("Hello from aws, cur temp get")
+    curtime = time.time()
+    logging.info(curtime)
+
+    #batchtime = str(int(time.time()))
+    #print(batchtime)
+    bvepoch = 9999999999
+    sucr = 0
+    vatempts = 0
+
+    while (sucr != 1 and vatempts <5):
+        vatempts = vatempts + 1
+        logging.info(str(vatempts))
+        try:
+            weget = urllib2.urlopen("http://api.openweathermap.org/data/2.5/weather?id=2759794") #.read()
+            #print (weget)
+
+
+            data = json.load(weget)
+            dtemp = str(int(round(((data["main"]["temp"])-273.15)*100)))
+            ddt = bvepoch-int(data["dt"])
+
+            #pprint(ddt)
+            #pprint(dtemp)
+            #pprint(dtemp)
+
+            connection = happybase.Connection('localhost')
+            tableval = connection.table('hcurtemp')
+
+            b = tableval.batch()
+            b.put(str(ddt), {'fd:curt': dtemp})
+            b.send()
+
+            sucr = 1
+            logging.info("success")
+        except Exception:
+            logging.exception("atempt")
+            time.sleep(5*60)
+
+except Exception:
+    logging.exception("main")
