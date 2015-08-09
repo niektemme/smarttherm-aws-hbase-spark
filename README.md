@@ -10,7 +10,9 @@ This smart thermostat is based on three feedback loops.
 ![Smart thermostat overview - three feedback loops](https://niektemme.files.wordpress.com/2015/07/schema_loop3.png)
 
 ## Installation & Setup
-The cloud part of the Smart Thermostat is based on one Python script (outside_temperature), two Spark jobs (score & cluster) and one Scala application to initiate the score Spark job. A more detailed description of how these work together is described in the blog post mentioned above. 
+
+### Overview
+The cloud part of the Smart Thermostat is based on one Python script (outside_temperature), two Spark jobs (score & cluster) and one Scala application to initiate the score Spark job. A more detailed description of how these work together is described in the [blog post](http://niektemme.com/2015/08/09/smart-thermostat/) mentioned above. 
 
 ### HBase tables
 Running HBase and creating the required HBase tables is described in the 'Installation & Setup' paragraph in the readme included in the [Smart Thermostat - Raspberry PI Repository](https://github.com/niektemme/smarttherm-rpi)
@@ -70,4 +72,5 @@ The code used in this project is often based on wonderful and clearly written ex
 - Michael Bouvy - http://michael.bouvy.net
 - Paco Nathan - O'Reilly Media - http://iber118.com/pxn/
 - Robert Faludi - Digi International - http://www.faludi.com
+- Roger Binns - Another Python SQLite Wrapper - https://github.com/rogerbinns/apsw/
 - Stephen Phillips - The University of Southampton, IT Innovation Centre  - http://blog.scphillips.com
